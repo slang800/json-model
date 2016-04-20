@@ -45,7 +45,7 @@
 			return html;
 		}
 	});
-	
+
 	bindings.add({
 		priority: -10,
 		canBind: {},
@@ -97,7 +97,7 @@
 				header += '<th>' + title.escapeHtml() + '</th>';
 			});
 			header += '</tr>';
-			
+
 			return header + model.map(function (item, index) {
 				var html = '<tr class="json-array-item">';
 				html += item.mapProps(keys, function (prop, key, index) {

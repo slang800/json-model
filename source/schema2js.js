@@ -113,7 +113,7 @@ SchemaStore.prototype = {
 			} else if (typeof schema.id === "string") {
 				schema.id = baseUri = resolveUrl(baseUri, schema.id);
 			}
-			
+
 			if (Array.isArray(schema)) {
 				for (var i = 0; i < schema.length; i++) {
 					this._searchSchema(schema[i], baseUri);
@@ -129,7 +129,7 @@ SchemaStore.prototype = {
 				}
 				for (var key in schema) {
 					if (key === "enum") {
-						continue;						
+						continue;
 					} else if (typeof schema[key] === 'object') {
 						this._searchSchema(schema[key], baseUri);
 					} else if (key === '$ref') {
@@ -257,7 +257,7 @@ function uriTemplatePart(subject, spec) {
 		var truncation = suffixMatch[1];
 		var varSuffix = suffixMatch[2];
 		varName = varName.substring(0, varName.length - suffixMatch[0].length);
-		
+
 		var itemJoin = ',', arrayPrefix = '', pairJoin = ',';
 		if (varSuffix.indexOf('*') + 1) {
 			pairJoin = '=';
@@ -322,7 +322,7 @@ function uriTemplatePart(subject, spec) {
 				return 'encodeURI(' + code + ')';
 			});
 		}
-		
+
 		// Construct actual code
 		var result = subject(varName);
 		if (typeof result === 'string') result = {code: result};
@@ -333,13 +333,13 @@ function uriTemplatePart(subject, spec) {
 			});
 			return x;
 		};
-		
+
 		function couldBeType(t) {
 			if (Array.isArray(type)) return type.indexOf(t) === -1;
 			if (typeof type === 'string') return type === t;
 			return true;
 		}
-		
+
 		var typeCode = {};
 		if (couldBeType('array')) {
 			if (!modFunction) return JSON.stringify(arrayPrefix) + ' + ' + expr + '.join(' + JSON.stringify(itemJoin + arrayPrefix) + ')';
@@ -356,7 +356,7 @@ function uriTemplatePart(subject, spec) {
 		if (couldBeType('string') || couldBeType('number') || couldBeType('integer') || couldBeType('boolean')) {
 			typeCode['plain'] = modFunction(expr);
 		}
-		
+
 		var code;
 		if (Object.keys(typeCode).length === 1) {
 			code = typeCode[Object.keys(typeCode)[0]];
@@ -378,7 +378,7 @@ function uriTemplatePart(subject, spec) {
 		}
 		codeParts.push(code);
 	});
-	
+
 	return codeParts.join(' + ');
 }
 
@@ -389,9 +389,9 @@ var uriTemplate = schema2js.uriTemplate = function uriTemplate(subject, template
 			return propertyExpression(subjectVar, property);
 		};
 	}
-	
+
 	var codeParts = [];
-	
+
 	var parts = template.split('{');
 	var firstConstant = parts.shift();
 	if (firstConstant) codeParts.push(JSON.stringify(firstConstant));
@@ -402,14 +402,14 @@ var uriTemplate = schema2js.uriTemplate = function uriTemplate(subject, template
 		var remainder = part.substring(spec.length + 1);
 		if (remainder) codeParts.push(JSON.stringify(remainder));
 	}
-	
+
 	if (!codeParts.length) codeParts.push('""');
 	return codeParts.join(' + ');
 };
 
 var Generator = schema2js.Generator = function Generator(config) {
 	if (!(this instanceof Generator)) return new Generator(config);
-	
+
 	config = config || {};
 	this.schemaStore = config.schemaStore || new SchemaStore();
 	this.config = {
@@ -558,7 +558,7 @@ Generator.prototype = {
 		});
 		varName = varName.replace(/^[^a-zA-Z]*/, '') || 'anonymous'; // strip leading zeros
 		varName = varName.charAt(0).toUpperCase() + varName.substring(1);
-		
+
 		if (!this.classVars[varName + suffix] || this.classVars[varName + suffix] === url) {
 			this.classVars[varName + suffix] = url;
 			return varName + suffix;
@@ -631,7 +631,7 @@ Generator.prototype = {
 		}
 
 		var code = '/* Schema: ' + url.replace(/\*/g, '%2A') + ' */\n';
-		
+
 		var classKey = this.classNameForUrl(url);
 		var classExpression = this.classVarForUrl(url || 'anonymous');
 		if (!this.schemaAcceptsType(schema, 'object') || this.config.classes === false) {
@@ -644,7 +644,7 @@ Generator.prototype = {
 			if ('default' in schema) {
 				body += 'value = value || ' + JSON.stringify(schema['default']) + ';\n';
 			}
-			
+
 			var castProperty = function(subSchema, subUrl, thisKeyExpr) {
 				if (this.schemaAcceptsType(subSchema, 'object')) {
 					var subClassVar = this.classExprForUrl(subUrl);
@@ -668,7 +668,7 @@ Generator.prototype = {
 					body += '}\n';
 				}
 			}.bind(this);
-			
+
 			// Defaults and property conversion
 			for (var key in schema.properties || {}) {
 				var subSchema = this.getFullSchema(schema.properties[key]);
@@ -696,9 +696,9 @@ Generator.prototype = {
 				body += indent('}\n');
 				body += '}\n';
 			}
-			
+
 			var superclassExpr = 'superclass';
-			
+
 			body += '\n' + superclassExpr + '.apply(this, arguments);\n';
 			code += indent(body);
 			code += '};\n';
@@ -711,7 +711,7 @@ Generator.prototype = {
 			}
 		}
 		code += classExpression + '.schema = ' + JSON.stringify(url) + ';\n';
-			
+
 		// Hyper-schema links
 		code += classExpression + '.links = {};\n';
 		(schema.links || []).forEach(function (ldo) {
@@ -721,7 +721,7 @@ Generator.prototype = {
 			});
 			var method = (ldo.method || 'GET').toUpperCase();
 			var encType = ldo.encType || ldo.enctype || ((method === 'GET' || method === 'DELETE') ? 'application/x-www-form-urlencoded' : 'application/json');
-			
+
 			var body = '';
 			body += 'if (typeof params === "function") {\n';
 			body += indent('callback = params;\n');
@@ -740,7 +740,7 @@ Generator.prototype = {
 			body += indent('encType: ' + JSON.stringify(encType) + ',\n');
 			body += indent('data: params || null\n');
 			body += '}, callback || function () {});';
-			
+
 			var methodName = method.toLowerCase() + prettyRel.charAt(0).toUpperCase() + prettyRel.substring(1);
 			code += classExpression + '.links[' + JSON.stringify(methodName) + ']' + ' = function (obj, params, callback) {\n';
 			code += indent(body);
@@ -806,7 +806,7 @@ Generator.prototype = {
 		}
 
 		var validation = '';
-		
+
 		var schemaUrlExpr = JSON.stringify(schemaUrl);
 
 		if (this.config.trackMissing && !this.schemaStore.get(schemaUrl)) {
@@ -952,7 +952,7 @@ Generator.prototype = {
 						validation += indent(indent('}\n'));
 						validation += indent('}\n');
 					}
-					
+
 					validation += indent('oneOfPassCount++;\n');
 					validation += '}\n';
 					if (this.config.subErrors) {
@@ -982,7 +982,7 @@ Generator.prototype = {
 				validation += '}\n';
 			}
 		}
-		
+
 		var typeCode = {
 			'array': '',
 			'object': '',
@@ -1204,16 +1204,16 @@ Generator.prototype = {
 		if (!allowedType('boolean')) {
 			typeCode['boolean'] += errorFunc('{code: ' + JSON.stringify(ErrorCodes.INVALID_TYPE) + ', params: {type: typeof ' + valueExpr + ', expected: ' + JSON.stringify(allowedTypes.join(', ')) + '}, path:' + dataPathExpr + ', schema: ' + schemaUrlExpr + '}', true);
 		}
-		
+
 		if (!allowedType('null')) {
 			typeCode['null'] += errorFunc('{code: ' + JSON.stringify(ErrorCodes.INVALID_TYPE) + ', params: {type: "null", expected: ' + JSON.stringify(allowedTypes.join(', ')) + '}, path:' + dataPathExpr + ', schema: ' + schemaUrlExpr + '}', true);
 		}
-		
+
 		validation += 'if (Array.isArray(' + valueExpr + ')) {\n';
 		validation += indent(typeCode['array']);
 		validation += '} else if (' + valueExpr + ' == null) {\n';
 		validation += indent(typeCode['null']);
-		
+
 		// For neatness: figure out which types of object are distinct, and group them into the same else-if-block
 		var distinctCode = {};
 		distinctCode[typeCode['object']] = (distinctCode[typeCode['object']] || []).concat(['object']);
@@ -1241,7 +1241,7 @@ Generator.prototype = {
 			}
 			validation += indent(code);
 		});
-		
+
 		validation += '}\n';
 		return validation;
 	},

@@ -10,13 +10,13 @@ describe('Interlinking', function () {
 				"bar": {"type": "object", "additionalProperties": true}
 			}
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
 		var DemoPropertiesBar = classes.DemoPropertiesBar;
 
 		assert.isFunction(DemoPropertiesBar);
-		
+
 		var demo = new Demo({
 			foo: 1,
 			bar: {a: 'A'}
@@ -38,7 +38,7 @@ describe('Interlinking', function () {
 				}
 			}
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
 

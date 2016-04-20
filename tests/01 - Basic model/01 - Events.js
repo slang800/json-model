@@ -8,20 +8,20 @@ describe('Model events', function () {
 
 	it('trigger change', function () {
 		var model = api.create({foo:'bar'});
-		
+
 		var changeArguments = [];
 		model.on('change', function () {
 			assert.equal(this, model);
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
 		});
-		
+
 		model.set('/foo', 'baz');
 		assert.deepEqual(changeArguments, [[model, '/foo']]);
 	});
 
 	it('triggers change in child when child changed', function () {
 		var model = api.create({foo:'bar'});
-		
+
 		var changeArguments = [];
 		model.on('change', function (pointer, value) {
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
@@ -29,14 +29,14 @@ describe('Model events', function () {
 		model.prop('foo').on('change', function (pointer, value) {
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
 		});
-		
+
 		model.set('/foo', 'baz');
 		assert.deepEqual(changeArguments, [[model, '/foo'], [model.prop('foo'), '']]);
 	});
 
 	it('triggers change in child when parent changed', function () {
 		var model = api.create({foo:'bar'});
-		
+
 		var changeArguments = [];
 		model.on('change', function () {
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
@@ -44,7 +44,7 @@ describe('Model events', function () {
 		model.prop('foo').on('change', function () {
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
 		});
-		
+
 		model.set({foo: 'baz'});
 		assert.deepEqual(changeArguments, [[model, ''], [model.prop('foo'), '']]);
 	});
@@ -65,9 +65,9 @@ describe('Model events', function () {
 				}
 			]
 		});
-	
+
 		var model = api.create({foo:'bar'}, [schemaUrl]);
-		
+
 		var changeArguments = [];
 		model.on('schemachange', function () {
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
@@ -75,7 +75,7 @@ describe('Model events', function () {
 		model.prop('foo').on('schemachange', function () {
 			changeArguments.push([this].concat(Array.prototype.slice.call(arguments, 0)));
 		});
-		
+
 		model.set({foo: 123});
 		assert.deepEqual(changeArguments, [
 			[model, [schemaUrl + '#/oneOf/1'], [schemaUrl + '#/oneOf/0']],

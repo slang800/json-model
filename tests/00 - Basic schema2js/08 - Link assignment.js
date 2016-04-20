@@ -29,7 +29,7 @@ describe('Link assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", '{': 'bracket', '': 'empty'});
-		
+
 		assert.isObject(validation.links);
 		assert.isArray(validation.links['/foo']);
 		assert.equal(validation.links['/foo'].length, 1);

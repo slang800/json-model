@@ -8,7 +8,7 @@ describe('URI Templates:', function () {
 				var template = testcase[0];
 				var options = testcase[1];
 				if (!Array.isArray(options)) options = [options];
-				
+
 				function typeSensitiveVar(prop) {
 					var expr = 'obj[' + JSON.stringify(prop) + ']';
 
@@ -19,7 +19,7 @@ describe('URI Templates:', function () {
 					}
 					return {code: expr, type: typeof spec.variables[prop]};
 				}
-				
+
 				var templateFunction1 = new Function('obj', 'return ' + api.schema2js.uriTemplate(typeSensitiveVar, template));
 				var result1 = templateFunction1(spec.variables);
 				assert.include(options, result1);
@@ -31,7 +31,7 @@ describe('URI Templates:', function () {
 			});
 		});
 	}
-	
+
 	var examples = require('./uri-templates/spec-examples.json');
 	for (var key in examples) {
 		createTests(examples[key], key);

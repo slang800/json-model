@@ -17,7 +17,7 @@ describe('Track missing Schemas', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", bar: 123, extra: true});
-		
+
 		assert.isObject(validation.schemas);
 		assert.deepEqual(validation.missing, {'/bar': [otherSchemaUrl]});
 	});
@@ -37,7 +37,7 @@ describe('Track missing Schemas', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", bar: 123, extra: true});
-		
+
 		assert.isUndefined(validation.schemas);
 		assert.deepEqual(validation.missing, {'/bar': [otherSchemaUrl]});
 	});
@@ -57,7 +57,7 @@ describe('Track missing Schemas', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", bar: 123, extra: true});
-		
+
 		assert.isObject(validation.schemas);
 		assert.isUndefined(validation.missing);
 	});
@@ -77,7 +77,7 @@ describe('Track missing Schemas', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", bar: 123, extra: true});
-		
+
 		assert.isUndefined(validation.schemas);
 		assert.isUndefined(validation.missing);
 	});

@@ -13,7 +13,7 @@ describe('Basic hypermedia', function () {
 				"href": "{+author}"
 			}]
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
 
@@ -22,7 +22,7 @@ describe('Basic hypermedia', function () {
 		});
 		assert.isFunction(Demo.links.getAuthor);
 	});
-	
+
 	it('handles no-parameter GET requests', function () {
 		var schema = {
 			"type": "object",
@@ -34,19 +34,19 @@ describe('Basic hypermedia', function () {
 				"href": "{+author}"
 			}]
 		};
-		
+
 		var requestParams = [];
 		var request = function (params, callback) {
 			requestParams.push(params);
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes(null, request);
-	
+
 		var demo = new classes.Demo({
 			author: "/users/0"
 		});
 		demo.getAuthor();
-		
+
 		assert.deepEqual(requestParams, [{
 			href: "/users/0",
 			method: "GET",

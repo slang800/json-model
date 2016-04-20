@@ -11,10 +11,10 @@ describe('Sub-errors', function () {
 				]
 			}
 		};
-		
+
 		var classes = schema2js.Generator().addSchema(schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var result = Demo.validate([null]);
 		assert.isFalse(result.valid, 'fails');
 		assert.equal(result.errors.length, 1);
@@ -25,8 +25,8 @@ describe('Sub-errors', function () {
 		assert.isArray(error.params.errors[0], 'params.errors is array of arrays');
 		assert.equal(error.params.errors[0].length, 1, 'params.errors[0] correct length');
 		var subError = error.params.errors[0][0];
-		assert.equal(subError.code, schema2js.ErrorCodes.INVALID_TYPE, 'sub-error code is correct'); 
-		
+		assert.equal(subError.code, schema2js.ErrorCodes.INVALID_TYPE, 'sub-error code is correct');
+
 		assert.equal(error.path, '/0', 'error.path');
 		assert.equal(subError.path, '/0', 'subError.path');
 	});
@@ -41,10 +41,10 @@ describe('Sub-errors', function () {
 				]}
 			]
 		};
-		
+
 		var classes = schema2js.Generator().addSchema(schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var result = Demo.validate({});
 		assert.isFalse(result.valid, 'fails');
 		assert.equal(result.errors.length, 1);
@@ -58,7 +58,7 @@ describe('Sub-errors', function () {
 		assert.equal(subSubErrors[0].length, 1, 'subSubErrors[0].length');
 		assert.equal(subSubErrors[1].length, 1, 'subSubErrors[1].length');
 	});
-	
+
 	it('supplies all failed anyOf options', function () {
 		var schema = {
 			anyOf: [
@@ -66,10 +66,10 @@ describe('Sub-errors', function () {
 				{type: 'number'}
 			]
 		};
-		
+
 		var classes = schema2js.Generator().addSchema(schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var result = Demo.validate(null);
 		assert.isFalse(result.valid, 'fails');
 		assert.equal(result.errors.length, 1);
@@ -80,7 +80,7 @@ describe('Sub-errors', function () {
 		assert.isArray(error.params.errors[0], 'params.errors is array of arrays');
 		assert.equal(error.params.errors[0].length, 1, 'params.errors[0] correct length');
 		var subError = error.params.errors[0][0];
-		assert.equal(subError.code, schema2js.ErrorCodes.INVALID_TYPE, 'sub-error code is correct'); 
+		assert.equal(subError.code, schema2js.ErrorCodes.INVALID_TYPE, 'sub-error code is correct');
 	});
 
 	it('can be disabled', function () {
@@ -90,10 +90,10 @@ describe('Sub-errors', function () {
 				{type: 'number'}
 			]
 		};
-		
+
 		var classes = schema2js.Generator({subErrors: false}).addSchema(schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var result = Demo.validate(null);
 		assert.isFalse(result.valid, 'fails');
 		assert.equal(result.errors.length, 1);

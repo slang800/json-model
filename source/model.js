@@ -223,7 +223,7 @@ api.validator = function (schema, callback) {
 			return {valid: !errors.length, errors: errors, schemas: schemaMap, links: linkMap, missing: missingMap};
 		};
 	};
-	
+
 	var result = transform(api.validationErrors(schema, function (error) {
 		callback(error, result);
 	}));
@@ -269,7 +269,7 @@ api.validationErrors = function (schema, callback) {
 				generator.addSchema(url);
 			}
 		});
-		
+
 		// This block goes first, because if we actually have all the schemas already, it might trigger a sychronous regeneration
 		whenSchemasFetched(function () {
 			missing.forEach(function (url) {
@@ -331,7 +331,7 @@ SchemaSet.prototype = {
 	},
 	prop: function (key) {
 		if (this._props[key]) return this._props[key];
-		
+
 		var newSchemas = [];
 		for (var i = 0; i < this._schemas.length; i++) {
 			var schema = this._schemas[i];
@@ -360,7 +360,7 @@ SchemaSet.prototype = {
 	},
 	item: function (index) {
 		var newSchemas = [], individual = false;
-		
+
 		for (var i = 0; i < this._schemas.length; i++) {
 			var schema = this._schemas[i];
 			if (schema.items) {
@@ -372,7 +372,7 @@ SchemaSet.prototype = {
 				}
 			}
 		}
-		
+
 		if (!individual) {
 			return this._cache('item', new SchemaSet(newSchemas));
 		} else {
@@ -412,7 +412,7 @@ function RootModel(dataStore, storeKey) {
 	var pokeStore = this.pokeStore = function () {
 		pendingPoke = pendingPoke || pokeNow() || asap(clearPoke) || true;
 	};
-	
+
 	// Hypertext metadata
 	this.url = null;
 	this.http = {
@@ -441,7 +441,7 @@ function RootModel(dataStore, storeKey) {
 			}
 		}
 	};
-	
+
 	var value = null;
 	var validatorFunctions = [];
 	var schemaMap = {};
@@ -488,7 +488,7 @@ function RootModel(dataStore, storeKey) {
 			}
 		}
 	}
-	
+
 	// TODO: emit relative JSON Pointer for parent changes?
 	function childValueChanges(modelSet) {
 		for (var key in modelSet.c) {
@@ -499,7 +499,7 @@ function RootModel(dataStore, storeKey) {
 			childValueChanges(childModelSet)
 		}
 	}
-	
+
 	this.reset = function (value, schemas) {
 		pendingOperations++;
 		validatorFunctions = (schemas || []).map(function (schema) {
@@ -513,7 +513,7 @@ function RootModel(dataStore, storeKey) {
 		this.setPathValue('', value);
 		asap(decrementPendingOperations);
 	};
-	
+
 	var models = {c: {}};
 	this.modelForPath = function (path) {
 		var pathParts = path.split('/').slice(1).map(pointerUnescape);
@@ -524,7 +524,7 @@ function RootModel(dataStore, storeKey) {
 		}
 		return target.m = target.m || new Model(this, path);
 	}
-	
+
 	this.setPathValue = function (path, newValue) {
 		this.state--;
 		pokeStore();
@@ -544,7 +544,7 @@ function RootModel(dataStore, storeKey) {
 				return false;
 			}
 		}
-		
+
 		// Parent+child value+schema changes
 		var oldSchemaMap = schemaMap;
 		recalculateSchemas();
@@ -568,7 +568,7 @@ function RootModel(dataStore, storeKey) {
 				childValueChanges(modelSet);
 			}
 		}
-		
+
 		if (!this.ready && !pendingSchemaRecalculate) {
 			pendingSchemaRecalculate = true;
 			// We un-shift (instead of using whenReady) to make sure it executes first, before any other callbacks
@@ -897,7 +897,7 @@ var whenSchemasFetched = api.whenSchemasFetched = function whenSchemasFetched(ca
 			return checkSchemasFetched(true);
 		}
 		missingUrl = baseUrl;
-		
+
 		if (pendingRequests[missingUrl]) return;
 		pendingRequests[missingUrl] = true;
 		requestFunction({method: 'GET', url: missingUrl}, function (error, data, status) {
@@ -966,13 +966,13 @@ DataStore.prototype = {
 	},
 	open: function (params, callback) {
 		var thisStore = this;
-		
+
 		params = this.normParams(params);
-	
+
 		if (params.fragment && params.fragment.charAt(0) !== '/') {
 			throw new Error('Non-pointer fragments not currently supported: #' + params.fragment);
 		}
-		
+
 		var storeKey = this._keyForParams(params);
 		var cached = this._getRootModel(storeKey);
 		var rootModel = this._getRootModel(storeKey, true);
@@ -1001,7 +1001,7 @@ DataStore.prototype = {
 				schemas = [];
 				if (params.targetSchema) schemas.push(params.targetSchema);
 			}
-		
+
 			rootModel.reset((typeof data !== 'undefined') ? data : null, schemas);
 			rootModel.http = {status: status || null, headers: newHeaders};
 			pendingDone();
@@ -1012,7 +1012,7 @@ DataStore.prototype = {
 				});
 			}
 		});
-		
+
 		return model;
 	},
 	create: function (initialValue, url, schemas, callback) {
@@ -1046,7 +1046,7 @@ DataStore.prototype = {
 		rootModel.url = params.url;
 		rootModel.reset(initialValue, schemas);
 		rootModel.http = {status: null, headers: {}};
-		
+
 		if (callback) {
 			model.whenReady(callback);
 		}
@@ -1078,7 +1078,7 @@ api.is = function (potentialModel) {
 if (typeof XMLHttpRequest === 'function') {
 	api.setRequestFunction(function (params, callback) {
 		if (params.method !== 'GET') throw new Error('Only GET supported for now');
-		
+
 		var request = new XMLHttpRequest();
 		try {
 			request.open(params.method, params.url, true, params.user, params.password);
@@ -1103,7 +1103,7 @@ if (typeof XMLHttpRequest === 'function') {
 				var value = match[2];
 				headers[key] = (value.length > 1) ? value : value[0];
 			});
-			
+
 			var data = request.responseText;
 			try {
 				data = JSON.parse(data);

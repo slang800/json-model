@@ -5,19 +5,19 @@ describe('Basic model', function () {
 	afterEach(function(done){
 		api.clean(done);
 	});
-	
+
 	it('creation, set/get', function () {
 		var model = api.create({foo:'bar'});
-		
+
 		assert.deepEqual(model.get('foo'), 'bar');
 		assert.deepEqual(model.get('/foo'), 'bar');
 		model.set('/foo', 'baz');
 		assert.deepEqual(model.get('foo'), 'baz');
 	});
-	
+
 	it('has prop(), keys(), has()', function () {
 		var model = api.create({foo:'bar'});
-		
+
 		assert.deepEqual(model.keys(), ['foo']);
 		assert.deepEqual(model.get('foo'), model.prop('foo').get());
 		assert.deepEqual(model.prop('foo').pointer(), '/foo');
@@ -27,30 +27,30 @@ describe('Basic model', function () {
 
 	it('has item(), length()', function () {
 		var model = api.create([0, 1, 2]);
-		
+
 		assert.deepEqual(model.length(), 3);
 		assert.deepEqual(model.get(1), model.item(1).get());
 	});
 
 	it('has path()', function () {
 		var model = api.create([0, 1, 2]);
-		
+
 		assert.equal(model.path('/0'), model.item(0));
 	});
-	
+
 	it('has up()', function () {
 		var model = api.create({'/foo': 'bar'});
-		
+
 		var child = model.prop('/foo');
 		assert.equal(child.get(), 'bar');
 		assert.equal(child.up(), model);
 		assert.equal(child.prop('baz').up(2), model);
 	});
-	
+
 	it('schemas and links', function () {
 		var schemaUrl = 'http://example.com/schemas/test' + Math.random();
 		api.schemaStore.add(schemaUrl, {
-			type: 'object', 
+			type: 'object',
 			properties: {
 				'foo': {
 					type: 'string',
@@ -62,17 +62,17 @@ describe('Basic model', function () {
 				'bar': {type: 'integer'}
 			}
 		});
-		
+
 		var model = api.create({foo: 'hello'}, 'http://example.com/1/2/3', [schemaUrl]);
-		
+
 		assert.deepEqual(model.schemas(), [schemaUrl]);
 		assert.deepEqual(model.schemas('foo'), [schemaUrl + '#/properties/foo']);
 		assert.deepEqual(model.schemas('foo'), model.prop('foo').schemas());
-		
+
 		assert.isTrue(model.hasSchema(schemaUrl));
 		assert.isFalse(model.hasSchema(schemaUrl + '1234'));
 		assert.isTrue(model.hasSchema('/foo', schemaUrl + '#/properties/foo'));
-		
+
 		assert.deepEqual(model.prop('foo').links().length, 1);
 		assert.deepEqual(model.prop('foo').links()[0].href, 'http://example.com/hello');
 		assert.deepEqual(model.prop('foo').links()[0].rel, 'test');
@@ -87,10 +87,10 @@ describe('Basic model', function () {
 		var requestParams = [];
 		api.setRequestFunction(function (params, callback) {
 			assert.deepEqual(params.url, schemaUrl, 'request correct URL');
-			
+
 			requestParams.push(params);
 			assert.deepEqual(requestParams.length, 1, 'only one request made');
-			
+
 			setTimeout(function () {
 				// Have to delay callback so can check pre-callback schema assignment
 				callback(null, {
@@ -106,7 +106,7 @@ describe('Basic model', function () {
 
 			api.setRequestFunction(function (params, callback) {
 				assert.deepEqual(params.url, schemaUrl2, 'second request correct URL');
-			
+
 				requestParams.push(params);
 				assert.deepEqual(requestParams.length, 2, 'second request made');
 
@@ -133,12 +133,12 @@ describe('Basic model', function () {
 		assert.isTrue(api.schemaStore.missing(schemaUrl), 'missing ' + schemaUrl);
 		var missing = api.schemaStore.missing();
 		assert.include(missing, schemaUrl, 'schemaUrl in missing');
-		
+
 		var model = api.create({foo: 'hello'}, [schemaUrl]);
-		
+
 		missing = api.schemaStore.missing();
 		assert.include(missing, schemaUrl, 'schemaUrl still in missing');
-		
+
 		// Before callback called
 		assert.deepEqual(model.schemas().length, 1, 'model has one schema assigned immediately');
 		assert.deepEqual(model.schemas('foo').length, 0, 'foo has no schemas yet');
@@ -147,17 +147,17 @@ describe('Basic model', function () {
 
 	it('toJSON()', function () {
 		var model = api.create({foo: 'hello'});
-		
+
 		assert.deepEqual(JSON.stringify(model), JSON.stringify(model.get()));
 	});
 
 	it('api.extend()', function () {
 		var model = api.create({foo: 'hello'});
-		
+
 		api.extend({
 			foo: function () {return 'bar';}
 		});
-		
+
 		assert.equal(model.foo(), 'bar');
 	});
 });

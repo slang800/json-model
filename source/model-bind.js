@@ -35,7 +35,7 @@ function htmlTag(tagName, attrs) {
 	}
 	attrs = attrs || {};
 	tagName = expandTag(tagName, attrs);
-	
+
 	var html = '<' + tagName;
 	for (var key in attrs) {
 		var value = attrs[key];
@@ -50,7 +50,7 @@ function htmlTag(tagName, attrs) {
 	return html += '>' + content.join('') + '</' + tagName + '>';
 }
 api.util.tag = htmlTag;
-	
+
 var specialAttributes = {
 	'class': function (element, value) {
 		if (value === null) {
@@ -82,7 +82,7 @@ function scanForChildBindings(element, context, callback) {
 				context.ajaxLink(element);
 			}
 		}
-		
+
 		for (var i = 0; i < element.childNodes.length; i++) {
 			var child = element.childNodes[i];
 			if (child.nodeType === 1) {
@@ -132,7 +132,7 @@ function executeDiffDom(subject, target, diff, context, callback) {
 		subject.nodeValue = target.nodeValue;
 		return donePending(null);
 	}
-	
+
 	var subjectOffset = -1;
 	var targetOffset = -1;
 	for (var diagonal = 1; diagonal < path.length; diagonal++) {
@@ -164,7 +164,7 @@ function diffDom(subject, target, cullSize, ignoreFirstBinding) {
 	if (subject.nodeType !== 1) return {score: 0.5};
 	if (subject.tagName !== target.tagName) return;
 	if (subject.tagName === 'input' && subject.type !== target.type) return;
-	
+
 	if (!ignoreFirstBinding && target.hasAttribute(dataPropertyStoreKey)) {
 		if (subject.getAttribute(dataPropertyStoreKey) === target.getAttribute(dataPropertyStoreKey) && subject.getAttribute(dataPropertyPath) === target.getAttribute(dataPropertyPath) && subject.getAttribute(dataPropertyUiPath) === target.getAttribute(dataPropertyUiPath)) {
 			return {score: 1};
@@ -190,10 +190,10 @@ function diffDom(subject, target, cullSize, ignoreFirstBinding) {
 		}
 	}
 	var score = attributesCorrect/attributesTotal;
-	
+
 	var options = [{score: score, path: [0], actions: []}];
 	var prevOptions = [];
-	
+
 	var subjectCount = subject.childNodes.length;
 	var targetCount = target.childNodes.length;
 	var diagonal = 1, endDiagonal = subjectCount + targetCount + 1;
@@ -245,7 +245,7 @@ function Binding(bindObj, registerIndex) {
 	if (!(this instanceof Binding)) return new Binding(bindObj, registerIndex);
 	var thisBinding = this;
 	this.registerIndex = registerIndex;
-	
+
 	this.preferDom = !!bindObj.preferDom;
 
 	if (typeof bindObj.canBind === 'string' || Array.isArray(bindObj.canBind)) {
@@ -299,7 +299,7 @@ function Binding(bindObj, registerIndex) {
 	} else if (typeof bindObj.html === 'string') {
 		this.html = function () {return bindObj.html;};
 	}
-	
+
 	var modelEvents = bindObj.modelEvents || {};
 	modelEvents.change = modelEvents.change || function (model, element, ui, pointerPath) {
 		return !pointerPath;
@@ -310,7 +310,7 @@ function Binding(bindObj, registerIndex) {
 		return pointerPath.split('/').length <= 2 && ui.jsonType(pointerPath) !== 'object';
 	};
 	*/
-	
+
 	this.bindDom = function (context, model, element) {
 		// TODO: polling is *nasty*
 		var checkUnattached = function () {
@@ -330,7 +330,7 @@ function Binding(bindObj, registerIndex) {
 				if (element.boundContext !== context) {
 					return thisBinding.unbindDom(context, model, element);
 				}
-				
+
 				var args = Array.prototype.slice.call(arguments, 0);
 				args = [model, element, context].concat(args);
 				var shouldRender = original.apply(this, args);
@@ -347,7 +347,7 @@ function Binding(bindObj, registerIndex) {
 				if (element.boundContext !== context) {
 					return thisBinding.unbindDom(context, model, element);
 				}
-				
+
 				var args = Array.prototype.slice.call(arguments, 0);
 				args = [model, element, context].concat(args);
 				var shouldRender = original.apply(this, args);
@@ -357,7 +357,7 @@ function Binding(bindObj, registerIndex) {
 			};
 			context.ui.on(key, handler);
 		});
-		
+
 		model.emit('bind', element);
 		if (uiHandlers.bind) uiHandlers.bind.call(null);
 	};
@@ -383,7 +383,7 @@ function Bindings(parent) {
 	this._immediateOptions = [];
 	this._concatOptions = [];
 	this._needSort = false;
-	
+
 	this.parent = parent || {
 		_state: 0,
 		_options: function () {return this;}.bind([])
@@ -480,12 +480,12 @@ if (typeof require === 'function' && typeof module !== 'undefined') {
 		});
 		global.bindings = this;
 		global.JsonModel = api;
-		
+
 		require(path.resolve(filename));
 		var code = require('fs').readFileSync(filename, {encoding: 'utf-8'});
 		code = '/*** ' + path.basename(filename) + ' ***/\n\n' + code;
 		this._includeJs = ((this._includeJs || '') + '\n\n' + code).replace(/^(\r?\n)*/g, '').replace(/(\r?\n)*$/g, '');
-		
+
 		while (after.length) after.pop()();
 	};
 	Bindings.prototype.bundleJs = function (skip) {
@@ -560,7 +560,7 @@ function BindingContext(bindings, dataStore, initialUi) {
 	this._usedBindings = [];
 	this.ui = this._dataStore.create(initialUi || {});
 	this.includeDataProperties = false;
-	
+
 	this.urlForState = function (resourceUrl, newUiState) {
 		if (typeof window === 'object' && window.location && typeof window.location.href === 'string') {
 			resourceUrl = api.util.url.relative(window.location.href, resourceUrl);
@@ -591,13 +591,13 @@ BindingContext.prototype = {
 	},
 	monitorLocation: function (element) {
 		var thisContext = this;
-		
+
 		var emitter = new api.EventEmitter();
-		
+
 		var getHref = function () {
 			return window.location.href;
 		};
-		
+
 		var oldHref = null;
 		var pending = false;
 		var isFirst = true;
@@ -610,7 +610,7 @@ BindingContext.prototype = {
 			fragment = decodeURIComponent(fragment);
 			var newHref = resolveUrl(href.replace(/#.*/, ''), fragment)
 			console.log('New URL:', newHref);
-			
+
 			var state = thisContext.stateForUrl(newHref);
 			var resourceUrl = state[0], uiState = state[1] || {};
 			console.log('New state:', resourceUrl, uiState);
@@ -634,7 +634,7 @@ BindingContext.prototype = {
 		if (typeof history === 'object' && typeof history.pushState === 'function') {
 			window.onpopstate = updateFromLocation;
 		}
-		
+
 		var interval = setInterval(updateFromLocation, 100);
 		return emitter;
 	},
@@ -758,7 +758,7 @@ BindingContext.prototype = {
 			if (tag !== 'html' && tag !== 'body') {
 				replacedHtml = '<span class="debug">' + context._usedBindings.length + ' bindings used ' + context.ui._path + '</span>' + replacedHtml;
 			}
-			
+
 			var hostElement = element.cloneNode(false);
 			hostElement.innerHTML = replacedHtml;
 			/* Failed attempt at IE9 compatibility (the doc.open() call is failing with "Unspecified Error")
@@ -802,21 +802,21 @@ BindingContext.prototype = {
 	},
 	_renderDom: function (model, element, uiPath, callback) {
 		var thisContext = this;
-		
+
 		if (!isAttached(element)) {
 			console.log('Not attached to document:', element);
 			asap(function () {
 				callback(new Error('Not attached to document'));
 			})
 		}
-		
+
 		var tag = element.tagName.toLowerCase();
 		var attrs = {};
 		for (var i = 0; i < element.attributes.length; i++) {
 			var attribute = element.attributes[i];
 			attrs[attribute.name] = attribute.value;
 		}
-		
+
 		model.whenReady(function () {
 			var oldState = model._root.state;
 
@@ -833,7 +833,7 @@ BindingContext.prototype = {
 			element.boundJsonModel = model;
 			element.boundBinding = binding;
 			element.boundContext = context;
-			
+
 			if (binding.preferDom) {
 				model.whenReady(function () {
 					thisContext._updateDom(element, tag, attrs, function (error) {
@@ -847,7 +847,7 @@ BindingContext.prototype = {
 				});
 				return;
 			}
-			
+
 			function htmlReady(error) {
 				scanForChildBindings(element, context, function (err) {
 					binding.bindDom(context, model, element);
@@ -872,7 +872,7 @@ BindingContext.prototype = {
 					}
 				}
 			}
-			
+
 			context._renderInnerHtml(model, binding, tag, attrs, function (error, innerHtml) {
 				// DEBUG
 				innerHtml = '<span class="debug">DOM/HTML render</span>' + innerHtml;
@@ -912,7 +912,7 @@ BindingContext.prototype = {
 		if (typeof element === 'string') {
 			element = document.getElementById(element);
 		}
-		
+
 		callback = callback || function () {};
 		this._renderDom(model, element, uiPath, callback);
 	},
@@ -1036,7 +1036,7 @@ api.bindings.add({
 				input.value = value;
 			}
 		}
-		
+
 		model.on('change', updateInput);
 		input.addEventListener('change', updateModel);
 		var pollTimer = null;

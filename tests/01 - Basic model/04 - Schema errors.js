@@ -5,16 +5,16 @@ describe('Schema errors', function () {
 	afterEach(function(done){
 		api.clean(done);
 	});
-	
+
 	it('filters correctly', function (done) {
 		api.setRequestFunction(function (params, callback) {
 			setTimeout(function () {
 				callback(null, {});
-				
+
 				done();
 			}, 10);
 		});
-	
+
 		var model = api.create({foo: 'bar', 'baz': 'bing'}, null, {
 			properties: {
 				'foo': {type: 'number'},
@@ -24,7 +24,7 @@ describe('Schema errors', function () {
 				}
 			}
 		});
-		
+
 		assert.equal(model.errors().length, 1, 'one plain error 1');
 		assert.equal(model.errors(false).length, 1, 'one plain error 2');
 		assert.equal(model.errors(true).length, 2, 'two errors 3');
@@ -43,16 +43,16 @@ describe('Schema errors', function () {
 		assert.equal(model.errors('baz', false, true).length, 0, 'no error 14');
 		assert.equal(model.errors('baz', true, true).length, 1, 'one errror 15');
 	});
-	
+
 	it('fetch errors', function (done) {
 		api.setRequestFunction(function (params, callback) {
 			setTimeout(function () {
 				callback(new Error('foo'));
 			});
 		});
-		
+
 		var otherSchema = "/schemas/other" + Math.random();
-	
+
 		var model = api.create({foo:'bar'}, null, {
 			oneOf: [
 				{},
@@ -67,10 +67,10 @@ describe('Schema errors', function () {
 			assert.isTrue(model.errors(true)[0].code == 12 || model.errors(true)[0].code == 701, 'correct code 10');
 			assert.isTrue(model.errors(true)[1].code == 12 || model.errors(true)[1].code == 701, 'correct code 11');
 			assert.notEqual(model.errors(true)[0].code, model.errors(true)[1].code, 'codes not equal 12');
-			
+
 			done();
 		});
-		
+
 		assert.equal(model.errors().length, 1, 'one plain error 1');
 		assert.equal(model.errors()[0].code, 12, 'correct code 2');
 		assert.equal(model.errors(true).length, 2, 'two errors 3');

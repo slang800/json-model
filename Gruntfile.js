@@ -47,14 +47,14 @@ module.exports = function (grunt) {
 			}
 		}
 	});
-	
+
 	grunt.registerTask('mdpages', function () {
 		var mdpages = require('mdpages'), fs = require('fs');
 		var markdown = fs.readFileSync(__dirname + '/README.md', {encoding: 'utf-8'});
 		var html = mdpages.convertString(markdown);
 		fs.writeFileSync(__dirname + '/index.html', html);
 	});
-	
+
 	grunt.registerTask('version', function () {
 		var fs = require('fs');
 		var packageInfo = require('./package.json');
@@ -62,7 +62,7 @@ module.exports = function (grunt) {
 		header = header.replace(/\/\*VERSION\*\/.*?\/\*\/VERSION\*\//, '/*VERSION*/' + JSON.stringify(packageInfo.version) + '/*/VERSION*/');
 		fs.writeFileSync('./source/__header.js', header);
 	})
-	
+
 	grunt.registerTask('compare', function () {
 		var fs = require('fs'), path = require('path');
 
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
 				}));
 			}
 		});
-		
+
 
 		/*******/
 
@@ -107,7 +107,7 @@ module.exports = function (grunt) {
 		var targetMs = 1000*20;
 		var maxRepeats = 10000;
 		comparison.runTests(tests, knownSchemas, targetMs, maxRepeats, function (error, results) {
-		
+
 			var readme = fs.readFileSync(__dirname + '/README.md', {encoding: 'utf-8'});
 			readme.asyncReplace(/(<!--SPEEDSTART-->)([^]*)(<!--SPEEDEND-->)/g, function (match, start, middle, end, callback) {
 				var model = JsonModel.create(results, null, 'tmp://comparison');

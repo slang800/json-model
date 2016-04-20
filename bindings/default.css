@@ -20,7 +20,7 @@
 	border: 1px solid #BBD;
 	border-radius: 3px;
 	background-color: #DDF;
-	
+
 	color: #008;
 	font-family: "Trebuchet MS", sans-serif;
 	font-size: 0.7em;
@@ -35,7 +35,7 @@
 .json-object-pair {
 	display: block;
 	position: relative;
-	
+
 	margin: 0.3em;
 	padding-left: 6.5em;
 }
@@ -47,13 +47,13 @@
 	left: 0;
 	width: 6em;
 	height: 100%;
-	
+
 	color: #080;
 	text-align: right;
 }
 
 .json-array {
-	
+
 }
 
 .json-array-item {

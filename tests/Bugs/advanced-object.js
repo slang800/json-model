@@ -5,7 +5,7 @@ describe('Bug from z-schema benchmarking', function () {
 	afterEach(function(done){
 		api.clean(done);
 	});
-	
+
 	it('compiles correctly', function () {
 		var schema = {
 		    "$schema": "http://json-schema.org/draft-04/schema#",
@@ -134,14 +134,14 @@ describe('Bug from z-schema benchmarking', function () {
 		        }
 		    }
 		};
-		
+
 		try {
 			var validator = api.validator(schema);
 		} catch (e) {
 			require('fs').writeFileSync('tmp.js', e.code);
 			throw e;
 		}
-		
+
 		var result = validator(data);
 		assert(result.valid, 'should pass');
 	});

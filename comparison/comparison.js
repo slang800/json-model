@@ -49,7 +49,7 @@
 			};
 		}
 	};
-	
+
 	JsonModel.schemaStore.add('tmp://comparison', {
 		type: 'array',
 		items: {
@@ -77,22 +77,22 @@
 			return value;
 		}
 	});
-	
+
 	api.runTests = function (tests, knownSchemas, targetMs, maxRepeats, callback) {
 		var resultsModel = JsonModel.create([], null, 'tmp://comparison');
-		
+
 		for (var key in knownSchemas) {
 			JsonModel.schemaStore.add(key, knownSchemas[key]);
 			if (oldApi) oldApi.schemaStore.add(key, knownSchemas[key]);
 		}
-		
+
 		var reference = new Validator('json-model@' + JsonModel.version + ' (precompiled)', function (schema) {
 			var validator = JsonModel.validator(schema);
 			return function (data) {
 				return validator(data).valid
 			};
 		});
-		
+
 		var alternatives = [];
 		// Include compilation (to measure compilation time)
 		alternatives.push(new Validator('json-model@' + JsonModel.version + ' (compile and validate)', function (schema) {
@@ -123,20 +123,20 @@
 				};
 			}));
 		}
-		
+
 		var referenceResult = null, results = [];
 		function startTests() {
 			referenceResult = reference.runTests(tests, targetMs, maxRepeats);
 			targetMs = Math.round(referenceResult.ms*referenceResult.repeats);
-			
+
 			resultsModel.set([referenceResult]);
 
 			console.log(referenceResult);
 			console.log('-------- target ms: ' + targetMs + ' --------');
-			
+
 			setTimeout(nextTest, 500);
 		}
-		
+
 		function nextTest() {
 			if (!alternatives.length) {
 				return endTests();
@@ -159,17 +159,17 @@
 			results.forEach(function (result) {
 				result.relativeTime = result.ms/referenceResult.ms;
 			});
-		
+
 			resultsModel.set([referenceResult].concat(results));
 
 			setTimeout(function () {
 				callback(null, [referenceResult].concat(results));
 			});
 		}
-		
+
 		setTimeout(startTests, 10);
 		return resultsModel;
 	};
-	
+
 	return api;
 });

@@ -17,7 +17,7 @@ describe('Two-stage generation', function () {
 		var validation1 = Demo.validate({foo: "hello"});
 		assert.isTrue(validation1.valid, 'If schema is missing, assume valid');
 	});
-	
+
 	it('Generating schemas again preserves existing classes', function () {
 		var schema = {
 			"type": "object",
@@ -29,7 +29,7 @@ describe('Two-stage generation', function () {
 		var generator = api.Generator({assignment: true}).addSchema('/schemas/demo', schema, 'Demo');
 		var classes1 = generator.classes();
 		var Demo = classes1.Demo;
-		
+
 		var classes2 = generator.classes();
 		assert.equal(Demo, classes2.Demo);
 	});
@@ -45,12 +45,12 @@ describe('Two-stage generation', function () {
 		var generator = api.Generator({assignment: true}).addSchema('/schemas/demo', schema, 'Demo');
 		var classes1 = generator.classes();
 		var Demo = classes1.Demo;
-		
+
 		generator.addSchema('/schemas/foo', {type: 'integer'}, 'Foo');
-		
+
 		var classes2 = generator.classes();
 		assert.equal(Demo, classes2.Demo);
-		
+
 		var validation1 = Demo.validate({foo: "hello"});
 		assert.isFalse(validation1.valid, 'must invalidate (string not int)');
 	});

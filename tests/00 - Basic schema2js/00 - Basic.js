@@ -12,7 +12,7 @@ describe('Basic shape', function () {
 				"bar": {"type": "string"}
 			}
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
 
@@ -32,18 +32,18 @@ describe('Basic shape', function () {
 				"bar": {"type": "string"}
 			}
 		};
-		
+
 		var classes = api.Generator().addSchema(schema).classes();
 		assert.isFunction(classes.Anonymous);
 	});
-	
+
 	it('follows inheritance', function () {
 		var schema = {
 			"type": "object"
 		};
-		
+
 		function SuperClass() {};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes(SuperClass);
 		var Demo = classes.Demo;
 		assert.instanceOf(Demo.prototype, SuperClass);
@@ -59,7 +59,7 @@ describe('Basic shape', function () {
 				"bar": {"$ref": "/schemas/bar"}
 			}
 		};
-		
+
 		var generator = api.Generator().addSchema('/demo', schema, 'Demo');
 
 		var missing = generator.missing();
@@ -68,7 +68,7 @@ describe('Basic shape', function () {
 		assert.isTrue(generator.missing('/demo'), 'missing /demo');
 		assert.isTrue(generator.missing('/somewhere/else'), 'missing /somewhere/else');
 	});
-	
+
 	it('lists missing references from fetched schema', function () {
 		var schema = {
 			"title": "Demo schema",
@@ -79,7 +79,7 @@ describe('Basic shape', function () {
 				"bar": {"$ref": "/schemas/bar"}
 			}
 		};
-		
+
 		var generator = api.Generator().addSchema('/demo');
 
 		var missing = generator.missing();
@@ -106,7 +106,7 @@ describe('Basic shape', function () {
 
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var demo = Demo({foo:1, bar:'baz', extraProperty:true});
 
 		assert.deepEqual(demo, {foo:1, bar:'baz', extraProperty:true});
@@ -121,15 +121,15 @@ describe('Basic shape', function () {
 			},
 			"default": {"foo": 1}
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var demo = Demo();
 
 		assert.deepEqual(demo, {foo:1});
 	});
-	
+
 	it('uses property defaults', function () {
 		var schema = {
 			"type": "object",
@@ -138,10 +138,10 @@ describe('Basic shape', function () {
 				"bar": {"type": "string", 'default': "hello"}
 			}
 		};
-		
+
 		var classes = api.Generator().addSchema('/demo', schema, 'Demo').classes();
 		var Demo = classes.Demo;
-		
+
 		var demo = Demo({foo:1});
 
 		assert.deepEqual(demo, {foo:1, bar:'hello'});

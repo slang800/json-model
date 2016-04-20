@@ -9,15 +9,15 @@ describe('JSON Schema validation:', function () {
 	beforeEach(function () {
 		api.schemaStore.add(require('./draft-04-schema.json'));
 	});
-	
+
 	function createTests(filename) {
 		filename = path.join(testDir, filename);
 		var tests = JSON.parse(fs.readFileSync(filename, {encoding: 'utf-8'}));
-		
+
 		tests.forEach(function (test) {
 			it(test.description, function () {
 				var schema = test.schema;
-				
+
 				var validator = api.validator(schema);
 				test.tests.forEach(function (dataTest) {
 					var validation = validator(dataTest.data);
@@ -40,7 +40,7 @@ describe('JSON Schema validation:', function () {
 			});
 		});
 	}
-	
+
 	createTests('type.json');
 	createTests('properties.json');
 	createTests('additionalProperties.json');

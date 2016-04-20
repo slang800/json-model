@@ -16,7 +16,7 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", bar: 123, extra: true});
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas['/foo'], '#/properties/foo');
@@ -38,14 +38,14 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: "hello", bar: "should be an integer", extra: true});
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas['/foo'], '#/properties/foo');
 		assert.include(validation.schemas['/bar'], '#/properties/bar');
 		assert.include(validation.schemas['/extra'], '#/additionalProperties');
 	});
-	
+
 	it('assigns items (when valid)', function () {
 		var schema = {
 			"type": "object",
@@ -61,7 +61,7 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: [true, false, true]});
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas['/foo/0'], '#/definitions/items');
@@ -84,7 +84,7 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate({foo: [true, 5, "string"]});
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas['/foo/0'], '#/definitions/items');
@@ -105,13 +105,13 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate(123);
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas[''], '#/anyOf/1');
 		assert.include(validation.schemas[''], '#/anyOf/2');
 	});
-	
+
 	it('assigns oneOf', function () {
 		var schema = {
 			oneOf: [
@@ -125,7 +125,7 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate("test");
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas[''], '#/oneOf/0');
@@ -144,7 +144,7 @@ describe('Schema assignment', function () {
 		var Demo = classes.Demo;
 
 		var validation = Demo.validate(123);
-		
+
 		assert.isObject(validation.schemas);
 		assert.include(validation.schemas[''], '');
 		assert.include(validation.schemas[''], '#/oneOf/1');
