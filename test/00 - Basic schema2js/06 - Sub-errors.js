@@ -1,4 +1,4 @@
-var api = require('../../source/schema2js')
+var api = require('../../lib/schema2js')
 var assert = require('chai').assert
 
 describe('Sub-errors', function () {
