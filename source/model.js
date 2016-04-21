@@ -1,5 +1,6 @@
-api.schema2js = schema2js
-var ErrorCodes = api.ErrorCodes = schema2js.ErrorCodes
+var urlUtils = require('./url-utils')
+var ErrorCodes = require('./error-codes')
+var schema2js = require('./schema2js')
 
 function pointerEscape (key) {
   return key.replace(/~/g, '~0').replace(/\//g, '~1')
@@ -32,67 +33,10 @@ function parseLink (linkFormat) {
   })
   return result
 }
-function parseQuery (queryString) {
-  var result = {}
-  ;(queryString.match(/(^\??|&)([^&]+)/g) || []).forEach(function (part) {
-    part = part.substring(1)
-    var key = part.split('=', 1)[0]
-    var value = part.substring(key.length + 1)
-    result[decodeURIComponent(key)] = decodeURIComponent(value)
-  })
-  return result
-}
-function encodeQuery (query) {
-  var parts = []
-  for (var key in query) {
-    parts.push(encodeURIComponent(key) + '=' + encodeQueryComponent(query[key]))
-  }
-  return parts.length ? ('?' + parts.join('&')) : ''
-}
-function encodeQueryComponent (str) {
-  return encodeURIComponent(str).replace(/%2F/gi, '/')
-}
-var asap = (typeof process === 'object' && typeof process.nextTick === 'function') ? process.nextTick.bind(process) : function (func) {
-  setTimeout(func, 0)
-}
-var timerWait = function (minGapMs, maxWaitMs, listener) {
-  if (typeof maxWaitMs === 'function') {
-    listener = maxWaitMs
-    maxWaitMs = minGapMs
-    minGapMs = null
-  }
-  var longTimer = null, shortTimer = null
-  return function () {
-    var thiz = this, args = arguments
-    var execute = function () {
-      clearTimeout(longTimer)
-      clearTimeout(shortTimer)
-      longTimer = shortTimer = null
-      listener.apply(thiz, args)
-    }
-    if (minGapMs) {
-      if (shortTimer) clearTimeout(shortTimer)
-      shortTimer = setTimeout(execute, minGapMs)
-    }
-    longTimer = longTimer || setTimeout(execute, maxWaitMs)
-  }
-}
 
-var parseUrl = schema2js.util.parseUrl
-var resolveUrl = schema2js.util.resolveUrl
-var relativeUrl = function (base, href, keepAbsolutePath) {
-  href = resolveUrl(base, href)
-  var loc = base
-  if (!keepAbsolutePath && href === loc) return
-  var locParsed = parseUrl(loc)
-  var domain = locParsed.protocol + locParsed.authority
-  var path = base.replace(/[#?].*/g, '').replace(/\/$/, '')
-  if (!keepAbsolutePath && href.substring(0, path.length) === path) {
-    href = href.substring(path.length)
-  } else if (href.substring(0, domain.length) === domain) {
-    href = href.substring(domain.length)
-  }
-  return href
+api = {
+  schema2js: schema2js,
+  ErrorCodes: ErrorCodes
 }
 
 api.util = {
@@ -100,18 +44,6 @@ api.util = {
   pointerUnescape: pointerUnescape,
   splitHeader: splitHeader,
   parseLink: parseLink,
-  url: {
-    parse: parseUrl,
-    resolve: resolveUrl,
-    relative: relativeUrl,
-    parseQuery: parseQuery,
-    encodeQuery: encodeQuery,
-    encodeQueryComponent: encodeQueryComponent
-  },
-  timer: {
-    asap: asap,
-    wait: timerWait
-  }
 }
 
 // Quick+dirty EventEmitter class
@@ -410,7 +342,7 @@ function RootModel (dataStore, storeKey) {
     pendingPoke = null
   }
   var pokeStore = this.pokeStore = function () {
-    pendingPoke = pendingPoke || pokeNow() || asap(clearPoke) || true
+    pendingPoke = pendingPoke || pokeNow() || setImmediate(clearPoke) || true
   }
 
   // Hypertext metadata
@@ -424,7 +356,7 @@ function RootModel (dataStore, storeKey) {
   this.ready = true
   var whenReadyCallbacks = []
   this.whenReady = function (callback) {
-    if (this.ready) return asap(callback)
+    if (this.ready) return setImmediate(callback)
     whenReadyCallbacks.push(callback)
   }
   var pendingOperations = 0
@@ -505,13 +437,13 @@ function RootModel (dataStore, storeKey) {
     validatorFunctions = (schemas || []).map(function (schema) {
       pendingOperations++
       if (typeof schema === 'string') {
-        schema = resolveUrl(thisRootModel.url || this.dataStore.baseUrl, schema)
+        schema = urlUtils.resolveUrl(thisRootModel.url || this.dataStore.baseUrl, schema)
       }
       return api.validationErrors(schema, decrementPendingOperations)
     })
     this.ready = (pendingOperations <= 1) && !validatorFunctions.length || api.schemasFetched()
     this.setPathValue('', value)
-    asap(decrementPendingOperations)
+    setImmediate(decrementPendingOperations)
   }
 
   var models = {c: {}}
@@ -680,10 +612,10 @@ Model.prototype = {
     return this._root.url + (this._path && ('#' + encodeURI(this._path)))
   },
   resolveUrl: function (url) {
-    return resolveUrl(this._root.url, url)
+    return urlUtils.resolveUrl(this._root.url, url)
   },
   relativeUrl: function (url, keepAbsolutePath) {
-    return relativeUrl(this._root.url, url, keepAbsolutePath)
+    return urlUtils.relativeUrl(this._root.url, url, keepAbsolutePath)
   },
   httpStatus: function (status) {
     return this._root.http.status
@@ -853,7 +785,7 @@ EventEmitter.addMethods(Model.prototype)
 
 function Link (rootModel, obj) {
   this._root = rootModel
-  this.href = resolveUrl(rootModel.url, obj.href)
+  this.href = urlUtils.resolveUrl(rootModel.url, obj.href)
   this.rel = obj.rel
   this.method = obj.method || 'GET'
 }
@@ -917,7 +849,7 @@ var whenSchemasFetched = api.whenSchemasFetched = function whenSchemasFetched (c
   })
   // We might have all the schemas anyway, but need a refresh, so regenerate the schemas only
   checkSchemasFetched(true)
-  asap(checkSchemasFetched)
+  setImmediate(checkSchemasFetched)
 }
 
 function DataStore (parent, baseUrl) {
@@ -937,7 +869,7 @@ DataStore.prototype = {
   normParams: function (params) {
     if (typeof params === 'string') return this.normParams({url: params})
     return {
-      url: resolveUrl(this.baseUrl, (params.url || params.href)).replace(/#.*/, ''),
+      url: urlUtils.resolveUrl(this.baseUrl, (params.url || params.href)).replace(/#.*/, ''),
       fragment: (params.url || params.href).replace(/[^#]*#?/, ''),
       method: (params.method || 'GET').toUpperCase(),
       headers: params.headers || {},
@@ -1083,7 +1015,7 @@ if (typeof XMLHttpRequest === 'function') {
     try {
       request.open(params.method, params.url, true, params.user, params.password)
     } catch (e) {
-      return asap(function () {
+      return setImmediate(function () {
         callback(e)
       })
     }
@@ -1118,3 +1050,5 @@ if (typeof XMLHttpRequest === 'function') {
     request.send()
   })
 }
+
+module.exports = api

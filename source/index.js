@@ -1,6 +1,5 @@
-var asap = api.util.timer.asap
-var resolveUrl = api.util.url.resolve
-var parseUrl = api.util.url.parse
+var api = require('./model')
+var resolveUrl = require('./url-utils').resolveUrl
 
 function isAttached (element) {
   var e = element
@@ -525,8 +524,8 @@ if (typeof require === 'function' && typeof module !== 'undefined') {
 api.bindings = new Bindings()
 
 api.navigateTo = function (href) {
-  href = api.util.url.resolve(window.location.href, href) // Make absolute
-  var relative = api.util.url.relative(window.location.href, href)
+  href = urlUtils.resolveUrl(window.location.href, href) // Make absolute
+  var relative = urlUtils.relativeUrl(window.location.href, href)
   if (relative === href) {
     window.location.href = href
     return
@@ -558,13 +557,13 @@ function BindingContext (bindings, dataStore, initialUi) {
 
   this.urlForState = function (resourceUrl, newUiState) {
     if (typeof window === 'object' && window.location && typeof window.location.href === 'string') {
-      resourceUrl = api.util.url.relative(window.location.href, resourceUrl)
+      resourceUrl = urlUtils.relativeUrl(window.location.href, resourceUrl)
     }
-    return api.util.url.encodeQuery({json: resourceUrl}) || '?'
+    return urlUtils.encodeQuery({json: resourceUrl}) || '?'
   }
   this.stateForUrl = function (url) {
-    var parsed = api.util.url.parse(url)
-    var query = api.util.url.parseQuery(parsed.search)
+    var parsed = urlUtils.parseUrl(url)
+    var query = urlUtils.parseQuery(parsed.search)
     return [query.json, {}]
   }
 }
@@ -785,7 +784,7 @@ BindingContext.prototype = {
 
     if (!isAttached(element)) {
       console.log('Not attached to document:', element)
-      asap(function () {
+      setImmediate(function () {
         callback(new Error('Not attached to document'))
       })
     }
@@ -955,7 +954,7 @@ String.prototype.asyncReplace = function (subStr, replacer, callback) {
     })
     replacer.apply(null, args)
   })
-  asap(checkDone)
+  setImmediate(checkDone)
   return this
 }
 
@@ -1005,3 +1004,5 @@ api.bindings.add({
     }
   }
 })
+
+module.exports = api

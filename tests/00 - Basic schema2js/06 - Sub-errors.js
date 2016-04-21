@@ -1,4 +1,4 @@
-var schema2js = require('../../').schema2js;
+var api = require('../../source/schema2js');
 var assert = require('chai').assert;
 
 describe('Sub-errors', function () {
@@ -12,20 +12,20 @@ describe('Sub-errors', function () {
       }
     };
 
-    var classes = schema2js.Generator().addSchema(schema, 'Demo').classes();
+    var classes = api.Generator().addSchema(schema, 'Demo').classes();
     var Demo = classes.Demo;
 
     var result = Demo.validate([null]);
     assert.isFalse(result.valid, 'fails');
     assert.equal(result.errors.length, 1);
     var error = result.errors[0];
-    assert.equal(error.code, schema2js.ErrorCodes.ONE_OF_MISSING, 'code is correct');
+    assert.equal(error.code, api.ErrorCodes.ONE_OF_MISSING, 'code is correct');
     assert.isArray(error.params.errors, 'params.errors is array');
     assert.equal(error.params.errors.length, 2, 'params.errors length');
     assert.isArray(error.params.errors[0], 'params.errors is array of arrays');
     assert.equal(error.params.errors[0].length, 1, 'params.errors[0] correct length');
     var subError = error.params.errors[0][0];
-    assert.equal(subError.code, schema2js.ErrorCodes.INVALID_TYPE, 'sub-error code is correct');
+    assert.equal(subError.code, api.ErrorCodes.INVALID_TYPE, 'sub-error code is correct');
 
     assert.equal(error.path, '/0', 'error.path');
     assert.equal(subError.path, '/0', 'subError.path');
@@ -42,7 +42,7 @@ describe('Sub-errors', function () {
       ]
     };
 
-    var classes = schema2js.Generator().addSchema(schema, 'Demo').classes();
+    var classes = api.Generator().addSchema(schema, 'Demo').classes();
     var Demo = classes.Demo;
 
     var result = Demo.validate({});
@@ -67,20 +67,20 @@ describe('Sub-errors', function () {
       ]
     };
 
-    var classes = schema2js.Generator().addSchema(schema, 'Demo').classes();
+    var classes = api.Generator().addSchema(schema, 'Demo').classes();
     var Demo = classes.Demo;
 
     var result = Demo.validate(null);
     assert.isFalse(result.valid, 'fails');
     assert.equal(result.errors.length, 1);
     var error = result.errors[0];
-    assert.equal(error.code, schema2js.ErrorCodes.ANY_OF_MISSING, 'code is correct');
+    assert.equal(error.code, api.ErrorCodes.ANY_OF_MISSING, 'code is correct');
     assert.isArray(error.params.errors, 'params.errors is array');
     assert.equal(error.params.errors.length, 2, 'params.errors length');
     assert.isArray(error.params.errors[0], 'params.errors is array of arrays');
     assert.equal(error.params.errors[0].length, 1, 'params.errors[0] correct length');
     var subError = error.params.errors[0][0];
-    assert.equal(subError.code, schema2js.ErrorCodes.INVALID_TYPE, 'sub-error code is correct');
+    assert.equal(subError.code, api.ErrorCodes.INVALID_TYPE, 'sub-error code is correct');
   });
 
   it('can be disabled', function () {
@@ -91,14 +91,14 @@ describe('Sub-errors', function () {
       ]
     };
 
-    var classes = schema2js.Generator({subErrors: false}).addSchema(schema, 'Demo').classes();
+    var classes = api.Generator({subErrors: false}).addSchema(schema, 'Demo').classes();
     var Demo = classes.Demo;
 
     var result = Demo.validate(null);
     assert.isFalse(result.valid, 'fails');
     assert.equal(result.errors.length, 1);
     var error = result.errors[0];
-    assert.equal(error.code, schema2js.ErrorCodes.ONE_OF_MISSING, 'code is correct');
+    assert.equal(error.code, api.ErrorCodes.ONE_OF_MISSING, 'code is correct');
     assert.isUndefined(error.params.errors, 'params.errors is missing');
   });
 

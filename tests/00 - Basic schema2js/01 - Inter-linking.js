@@ -1,4 +1,4 @@
-var api = require('../../').schema2js;
+var api = require('../../source/schema2js');
 var assert = require('chai').assert;
 
 describe('Interlinking', function () {
