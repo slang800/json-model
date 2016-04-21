@@ -1,5 +1,6 @@
 var api = require('../')
 var assert = require('chai').assert
+var examples = require('./uri-templates/spec-examples.json')
 
 describe('URI Templates:', function () {
   function createTests (spec, name) {
@@ -31,7 +32,6 @@ describe('URI Templates:', function () {
     })
   }
 
-  var examples = require('./uri-templates/spec-examples.json')
   for (var key in examples) {
     createTests(examples[key], key)
   }
