@@ -21,7 +21,7 @@
     "bindings"
   ],
   "author": "Geraint Luff",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "devDependencies": {
     "chai": "~1.9.1",
     "grunt": "~0.4.1",
